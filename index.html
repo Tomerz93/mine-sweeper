@@ -14,10 +14,18 @@
     <div class="data-container">
       <h3 class="data mark">Remaining Flags:</h3>
       <h3 class="data timer">Time Passed :0</h3>
+      <span class="lives"></span>
     </div>
     <div class="main-content">
       <h1>Mine Sweeper</h1>
-      <div onclick="markRandom()" class="btn">Show Random</div>
+      <div class="btn-container">
+        <button onclick="markRandom()" class="btn">
+          <span></span> Show safe Cell
+        </button>
+        <button class="btn" onclick="setDifficulty(4,2)">Easy</button>
+        <button class="btn" onclick="setDifficulty(8,12)">Medium</button>
+        <button class="btn" onclick="setDifficulty(12,30)">Diffucult</button>
+      </div>
       <table>
         <tbody oncontextmenu="return false" class="game-container"></tbody>
       </table>
