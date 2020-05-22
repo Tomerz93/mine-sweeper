@@ -4,7 +4,7 @@ const MINE = "💣";
 const FLAG = "🏴";
 
 var LIVESARRAY = ["❤️", "❤️", "❤️"];
-
+var bestTime = [];
 var gBoard = [];
 
 var gLevel = {
@@ -17,23 +17,35 @@ var gGame = {
   markedCount: gLevel.MINES,
   secsPassed: 0,
   helperCount: 3,
+  movesTook: 0,
 };
 
 var markedCountElement = document.querySelector(".mark");
 var timer = document.querySelector(".timer");
 var remainingHelperCounter = document.querySelector(".btn span");
+var emoji = document.querySelector(".icon-container");
+var modal = document.querySelector(".modal");
 
 var timerInterval;
 var gameStartTime;
 
 var firstClick = false;
 
-function setDifficulty(size, mines) {
+function setDifficulty(size, mines, elBtn) {
+  if (elBtn) {
+    setButtonClass(elBtn);
+    elBtn.classList.add("selected");
+  }
   gLevel.SIZE = size;
   gLevel.MINES = mines;
   init();
 }
 init();
+
+function resetGame() {
+  closeModal();
+  setDifficulty(gLevel.SIZE, gLevel.MINES, false);
+}
 
 function buildBoard() {
   for (let i = 0; i < gLevel.SIZE; i++) {
@@ -51,6 +63,18 @@ function buildBoard() {
 }
 
 function init() {
+  var bestScore = getItemFromLocalStorage(gLevel.MINES);
+  if (bestScore) {
+    document.querySelector(
+      ".best-time"
+    ).innerText = `Best time is:${bestScore}`;
+  } else {
+    document.querySelector(
+      ".best-time"
+    ).innerText = `No best time for this level yet`;
+  }
+  modal.querySelector(".moves-took").innerText = "it took you ";
+  modal.querySelector(".time-took").innerText = "You beat the game in:";
   resetVar();
   buildBoard();
   renderBoard(gBoard);
@@ -65,7 +89,9 @@ function resetVar() {
   gGame.helperCount = 3;
   gGame.markedCount = gLevel.MINES;
   gGame.shownCount = 0;
+  gGame.movesTook = 0;
   LIVESARRAY = ["❤️", "❤️", "❤️"];
+  emoji.innerText = "😊";
   document.querySelector(".lives").innerText = "";
   gGame.isOn = true;
   remainingHelperCounter.innerText = gGame.helperCount;
@@ -111,26 +137,12 @@ function setMinesNegsCount(board) {
   }
 }
 
-// function saveSate() {
-//   var gameState = {
-//     gGame: { ...gGame },
-//     gBoard: [...gBoard],
-//   };
-//   return gameState;
-// }
-
-// function PrevState() {
-//   var previousGameData = saveSate();
-//   gGame = previousGameData.gGame;
-//   gBoard = previousGameData.gBoard;
-//   renderBoard(gBoard);
-// }
-
 function cellCliked(elCell, i, j) {
   var pressedCell = gBoard[i][j];
 
   //starting the interval
   if (gGame.isOn && !pressedCell.isShown) {
+    gGame.movesTook++;
     if (!timerInterval) {
       gameStartTime = new Date();
       timerInterval = setInterval(startTimer, 1000);
@@ -157,6 +169,7 @@ function cellCliked(elCell, i, j) {
         gGame.isOn = false;
         showAllMines();
         clearInterval(timerInterval);
+        emoji.innerText = "🤯";
         return;
       }
       return;
@@ -174,7 +187,6 @@ function cellCliked(elCell, i, j) {
       elCell.innerText = pressedCell.minesAroundCount;
     }
   }
-  console.log(gBoard);
 
   checkGameOver();
 }
@@ -204,6 +216,7 @@ function randomaizeBombLocation(i, j) {
 
 function cellMarked(elCell) {
   if (elCell.innerText && elCell.innerText !== FLAG) return;
+  gGame.movesTook++;
   if (elCell.innerText === FLAG) {
     elCell.innerHTML = " ";
     gGame.markedCount++;
@@ -219,8 +232,8 @@ function cellMarked(elCell) {
 
   return false;
 }
+
 function checkGameOver() {
-  debugger;
   var cellAmount = gLevel.SIZE ** 2;
   if (
     gGame.markedCount === 0 &&
@@ -229,7 +242,26 @@ function checkGameOver() {
     clearInterval(timerInterval);
     timerInterval = null;
     gGame.isOn = false;
-    alert("you won");
+    emoji.innerText = "🏆";
+    gGame.movesTook++;
+    var bestScore = getItemFromLocalStorage(gLevel.MINES);
+    if (!bestScore) {
+      saveToLocalStorage(gLevel.MINES);
+      document.querySelector(".best-time").innerText =
+        "Best time is: " + gGame.secsPassed;
+    }
+    if (gGame.secsPassed < bestScore) {
+      saveToLocalStorage(gLevel.MINES);
+      document.querySelector(
+        ".best-time"
+      ).innerText = `your best time is: ${bestScore}`;
+    }
+    modal.style.transform = "translateY(0px)";
+    modal.querySelector(".moves-took").innerText +=
+      " " + gGame.movesTook + " moves to finish the game";
+
+    modal.querySelector(".time-took").innerText +=
+      "  " + gGame.secsPassed + " seconds";
   }
 }
 
@@ -281,7 +313,6 @@ function mapEmptyPositions() {
       }
     }
   }
-  console.log("em", emptyPositionArray);
   return emptyPositionArray;
 }
 

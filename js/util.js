@@ -22,3 +22,40 @@ function inRange(board, i, j) {
   }
   return true;
 }
+
+function saveToLocalStorage(level) {
+  if (level === 2) {
+    localStorage.setItem("bestScoreEasy", gGame.secsPassed);
+    return;
+  }
+  if (level === 12) {
+    localStorage.setItem("bestScoreMedium", gGame.secsPassed);
+    return;
+  }
+  if (level === 30) {
+    localStorage.setItem("bestScoreHard", gGame.secsPassed);
+  }
+}
+function getItemFromLocalStorage(level) {
+  if (level === 2) {
+    return localStorage.getItem("bestScoreEasy");
+  }
+  if (level === 12) {
+    return localStorage.getItem("bestScoreMedium");
+  }
+  if (level === 30) {
+    return localStorage.getItem("bestScoreHard");
+  }
+}
+
+function setButtonClass(elBtn) {
+  var buttons = document.querySelector(".btn-container");
+  for (let i = 0; i < buttons.children.length; i++) {
+    if (elBtn.classList.contains("selected")) continue;
+    buttons.children[i].classList.remove("selected");
+  }
+}
+
+function closeModal() {
+  modal.style.transform = "translateY(500px)";
+}

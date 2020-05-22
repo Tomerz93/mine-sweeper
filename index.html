@@ -11,20 +11,37 @@
     <link rel="stylesheet" href="style/style.css" />
   </head>
   <body>
+    <div class="icon-container" onclick="resetGame()">😊</div>
+    <h3 class="best-time" style="color: #fff;">Best time:</h3>
     <div class="data-container">
       <h3 class="data mark">Remaining Flags:</h3>
       <h3 class="data timer">Time Passed :0</h3>
       <span class="lives"></span>
     </div>
     <div class="main-content">
+      <div class="modal">
+        <button onclick="closeModal()" class='close'>X</button>
+        <h2>Congrats, You just beat Mine Sweeper</h1>
+        <ul>
+          <li class='time-took'>You beat the game in:</li>
+          <li class='moves-took'>it took you </li>
+          <button class="btn reset" onclick="resetGame()">Play Again?</button>
+        </ul>
+      </div>
       <h1>Mine Sweeper</h1>
       <div class="btn-container">
         <button onclick="markRandom()" class="btn">
           <span></span> Show safe Cell
         </button>
-        <button class="btn" onclick="setDifficulty(4,2)">Easy</button>
-        <button class="btn" onclick="setDifficulty(8,12)">Medium</button>
-        <button class="btn" onclick="setDifficulty(12,30)">Diffucult</button>
+        <button class="btn easy selected" onclick="setDifficulty(4,2,this)">
+          Easy
+        </button>
+        <button class="btn medium" onclick="setDifficulty(8,12,this)">
+          Medium
+        </button>
+        <button class="btn hard" onclick="setDifficulty(12,30,this)">
+          Diffucult
+        </button>
       </div>
       <table>
         <tbody oncontextmenu="return false" class="game-container"></tbody>
